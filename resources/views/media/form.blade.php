@@ -3,31 +3,19 @@
 @section('title', $mode === 'create' ? 'Upload Media' : 'Edit Media')
 
 @section('content')
-    <div class="tp-page-header">
-        <div>
-            <h1 class="tp-page-title">
-                {{ $mode === 'create' ? 'Upload Media' : 'Edit Media' }}
-            </h1>
+    <div class="tp-editor space-y-6">
+        <div class="tp-page-header">
+            <div>
+                <h1 class="tp-page-title">
+                    {{ $mode === 'create' ? 'Upload Media' : 'Edit Media' }}
+                </h1>
+            </div>
         </div>
 
-        <div class="flex gap-2">
-            @if ($mode === 'edit')
-                <form
-                    method="POST"
-                    action="{{ route('tp.media.destroy', ['media' => $media->id]) }}"
-                    onsubmit="return confirm('Delete this media file? This cannot be undone.');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="tp-button-danger" aria-label="Delete media">Delete</button>
-                </form>
-            @endif
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 gap-5 lg:grid-cols-4">
-        <div class="space-y-5 lg:col-span-3">
-            <div class="tp-metabox">
-                <div class="tp-metabox__body space-y-4">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
+            <div class="space-y-6 lg:col-span-3">
+                <div class="tp-metabox">
+                    <div class="tp-metabox__body space-y-4">
                     <form
                         method="POST"
                         action="{{ $mode === 'create' ? route('tp.media.store') : route('tp.media.update', ['media' => $media->id]) }}"
@@ -68,13 +56,26 @@
             </div>
         </div>
 
-        <div class="space-y-5 lg:sticky lg:top-6 lg:self-start">
+        <div class="space-y-6 lg:sticky lg:top-6 lg:self-start">
             <div class="tp-metabox">
                 <div class="tp-metabox__title">Actions</div>
                 <div class="tp-metabox__body space-y-3 text-sm">
-                    <button type="submit" form="media-form" class="tp-button-primary">
+                    <button type="submit" form="media-form" class="tp-button-primary w-full justify-center">
                         {{ $mode === 'create' ? 'Upload Media' : 'Save Changes' }}
                     </button>
+
+                    @if ($mode === 'edit')
+                        <form
+                            method="POST"
+                            action="{{ route('tp.media.destroy', ['media' => $media->id]) }}"
+                            onsubmit="return confirm('Delete this media file? This cannot be undone.');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="tp-button-danger w-full justify-center" aria-label="Delete media">
+                                Delete
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
 
