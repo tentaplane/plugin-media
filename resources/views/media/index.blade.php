@@ -17,9 +17,23 @@
     <div class="tp-metabox">
         <div class="tp-metabox__title">
             <form method="GET" action="{{ route('tp.media.index') }}" class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <input type="hidden" name="view" value="{{ $view }}" />
                 <div class="flex-1"></div>
 
-                <div class="flex gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex items-center gap-1">
+                        <a
+                            href="{{ route('tp.media.index', array_merge(request()->query(), ['view' => 'list'])) }}"
+                            class="{{ $view === 'list' ? 'tp-button-secondary' : 'tp-button-secondary opacity-60 hover:opacity-100' }}">
+                            List
+                        </a>
+                        <a
+                            href="{{ route('tp.media.index', array_merge(request()->query(), ['view' => 'grid'])) }}"
+                            class="{{ $view === 'grid' ? 'tp-button-secondary' : 'tp-button-secondary opacity-60 hover:opacity-100' }}">
+                            Grid
+                        </a>
+                    </div>
+
                     <input
                         name="s"
                         value="{{ $search }}"
@@ -32,6 +46,65 @@
 
         @if ($media->count() === 0)
             <div class="tp-metabox__body tp-muted text-sm">No media found.</div>
+        @elseif ($view === 'grid')
+            <div class="tp-metabox__body">
+                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                    @foreach ($media as $item)
+                        @php
+                            $disk = (string) ($item->disk ?? 'public');
+                            $path = (string) ($item->path ?? '');
+                            $url = $path !== '' ? Storage::disk($disk)->url($path) : null;
+                            $mime = (string) ($item->mime_type ?? '');
+                            $isImage = $mime !== '' && str_starts_with($mime, 'image/');
+                            $size = is_numeric($item->size ?? null) ? (int) $item->size : null;
+                            $sizeLabel = $size ? number_format($size / 1024, 1).' KB' : '—';
+                            $title = (string) ($item->title ?? '');
+                            $originalName = (string) ($item->original_name ?? '');
+                        @endphp
+                        <div class="rounded border border-slate-200 bg-white shadow-sm">
+                            <div class="border-b border-slate-100">
+                                @if ($url && $isImage)
+                                    <img
+                                        src="{{ $url }}"
+                                        alt=""
+                                        class="h-32 w-full rounded-t object-cover" />
+                                @else
+                                    <div class="flex h-32 items-center justify-center rounded-t bg-slate-50 text-xs uppercase text-slate-400">
+                                        File
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="space-y-2 p-3">
+                                <div class="text-sm font-semibold">
+                                    <a href="{{ route('tp.media.edit', ['media' => $item->id]) }}" class="hover:underline">
+                                        {{ $title !== '' ? $title : ($originalName !== '' ? $originalName : 'Untitled') }}
+                                    </a>
+                                </div>
+                                <div class="text-xs text-slate-500">
+                                    {{ $mime !== '' ? $mime : '—' }} · {{ $sizeLabel }}
+                                </div>
+                                <div class="flex flex-wrap gap-3 text-xs text-slate-600">
+                                    <a
+                                        class="tp-button-link hover:text-slate-900"
+                                        href="{{ route('tp.media.edit', ['media' => $item->id]) }}">
+                                        Edit
+                                    </a>
+                                    <form
+                                        method="POST"
+                                        action="{{ route('tp.media.destroy', ['media' => $item->id]) }}"
+                                        onsubmit="return confirm('Delete this media file?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="tp-button-link text-red-600 hover:text-red-700">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         @else
             <div class="tp-table-wrap">
                 <table class="tp-table">

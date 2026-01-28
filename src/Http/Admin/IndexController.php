@@ -13,6 +13,8 @@ final class IndexController
     public function __invoke(Request $request): View
     {
         $search = trim((string) $request->query('s', ''));
+        $view = (string) $request->query('view', 'list');
+        $view = in_array($view, ['list', 'grid'], true) ? $view : 'list';
 
         $query = TpMedia::query()->latest('created_at');
 
@@ -28,6 +30,7 @@ final class IndexController
         return view('tentapress-media::media.index', [
             'media' => $media,
             'search' => $search,
+            'view' => $view,
         ]);
     }
 }
