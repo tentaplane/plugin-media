@@ -14,6 +14,10 @@
         </div>
     </div>
 
+    @php
+        $urlGenerator = app(\TentaPress\Media\Contracts\MediaUrlGenerator::class);
+    @endphp
+
     <div class="tp-metabox">
         <div class="tp-metabox__title">
             <form method="GET" action="{{ route('tp.media.index') }}" class="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -53,7 +57,7 @@
                         @php
                             $disk = (string) ($item->disk ?? 'public');
                             $path = (string) ($item->path ?? '');
-                            $url = $path !== '' ? Storage::disk($disk)->url($path) : null;
+                            $url = $urlGenerator->url($item);
                             $mime = (string) ($item->mime_type ?? '');
                             $isImage = $mime !== '' && str_starts_with($mime, 'image/');
                             $size = is_numeric($item->size ?? null) ? (int) $item->size : null;
@@ -124,7 +128,7 @@
                             @php
                                 $disk = (string) ($item->disk ?? 'public');
                                 $path = (string) ($item->path ?? '');
-                                $url = $path !== '' ? Storage::disk($disk)->url($path) : null;
+                            $url = $urlGenerator->url($item);
                                 $mime = (string) ($item->mime_type ?? '');
                                 $isImage = $mime !== '' && str_starts_with($mime, 'image/');
                                 $size = is_numeric($item->size ?? null) ? (int) $item->size : null;

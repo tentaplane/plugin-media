@@ -80,9 +80,8 @@
 
             @if ($mode === 'edit')
                 @php
-                    $disk = (string) ($media->disk ?? 'public');
-                    $path = (string) ($media->path ?? '');
-                    $url = $path !== '' ? Storage::disk($disk)->url($path) : null;
+                    $urlGenerator = app(\TentaPress\Media\Contracts\MediaUrlGenerator::class);
+                    $url = $urlGenerator->url($media);
                     $mime = (string) ($media->mime_type ?? '');
                     $isImage = $mime !== '' && str_starts_with($mime, 'image/');
                     $size = is_numeric($media->size ?? null) ? (int) $media->size : null;
