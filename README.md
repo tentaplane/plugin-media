@@ -5,7 +5,7 @@ Upload and manage media files.
 ## Plugin details
 
 - ID: `tentapress/media`
-- Version: `0.1.1`
+- Version: `0.1.2`
 - Service provider: `TentaPress\Media\MediaServiceProvider`
 
 ## Requirements
